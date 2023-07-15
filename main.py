@@ -23,7 +23,6 @@ def get_url(regId, page):
 
 def get_urls_rielrts(driver, regionIp, pages):
     """
-     The  get_urls_rielrts  function is designed to retrieve a list of URLs from a Selenium driver.
         It takes the driver, region IP address, and number of pages as arguments.
         Inside the function, there is a loop that iterates over the specified number of pages.
         Each page's URL is generated using the  get_url  function and then the driver navigates to that URL.
@@ -32,7 +31,7 @@ def get_urls_rielrts(driver, regionIp, pages):
 
     try:
         for index in range(pages):
-            url = f"https://www.cian.ru/realtors/?regionId={regionIp}&page={index+1}"
+            url = f"https://www.cian.ru/realtors/?regionId={regionIp}&page={index + 1}"
             driver.get(url)
         for elem in driver.find_elements(By.CLASS_NAME, "_9400a595a7--container--J25nK"):
             try:
@@ -61,7 +60,6 @@ def get_urls_rielrts(driver, regionIp, pages):
 
             WebDriverWait(driver, 8).until(ec.url_to_be(driver.current_url))
 
-
     except Exception as ex:
         print(type(ex).__name__)
 
@@ -69,6 +67,11 @@ def get_urls_rielrts(driver, regionIp, pages):
 
 
 def get_info_personal(driver, links):
+    """
+    This is the main function which parses all information about realtors and saved data in Excel file.
+    It takes only one argument: a link on realtor to parse.
+    """
+
     progress_bar = tqdm(total=len(links), desc="Парсинг данных пользователей", unit="пользователей")
 
     workbook = openpyxl.Workbook()
@@ -105,7 +108,8 @@ def get_info_personal(driver, links):
                 phone_number_element = driver.find_element(By.CSS_SELECTOR, 'div._3ea6fa5da8--phones_minimized--XieZH')
                 driver.execute_script("arguments[0].click();", phone_number_element)
 
-                WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//*[@id="realtor-contacts"]/div/div[4]/div/ul/li/a')))
+                WebDriverWait(driver, 10).until(
+                    ec.visibility_of_element_located((By.XPATH, '//*[@id="realtor-contacts"]/div/div[4]/div/ul/li/a')))
                 phone_number = driver.find_element(By.XPATH, '//*[@id="realtor-contacts"]/div/div[4]/div/ul/li/a').text
                 mail = element[1].text
             except NoSuchElementException:
@@ -117,7 +121,8 @@ def get_info_personal(driver, links):
                 phone_number_element = driver.find_element(By.CSS_SELECTOR, 'div._3ea6fa5da8--phones_minimized--XieZH')
                 driver.execute_script("arguments[0].click();", phone_number_element)
 
-                WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//*[@id="realtor-contacts"]/div/div[3]/div/ul/li/a')))
+                WebDriverWait(driver, 10).until(
+                    ec.visibility_of_element_located((By.XPATH, '//*[@id="realtor-contacts"]/div/div[3]/div/ul/li/a')))
                 phone_number = driver.find_element(By.XPATH, '//*[@id="realtor-contacts"]/div/div[3]/div/ul/li/a').text
                 mail = element[1].text
 
@@ -133,7 +138,8 @@ def get_info_personal(driver, links):
 
                 driver.execute_script("arguments[0].click();", phone_number_element)
 
-                WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//*[@id="realtor-contacts"]/div/div[2]/div/ul/li/a')))
+                WebDriverWait(driver, 10).until(
+                    ec.visibility_of_element_located((By.XPATH, '//*[@id="realtor-contacts"]/div/div[2]/div/ul/li/a')))
                 phone_number = driver.find_element(By.XPATH, '//*[@id="realtor-contacts"]/div/div[2]/div/ul/li/a').text
                 mail = element[0].text
 
@@ -147,7 +153,8 @@ def get_info_personal(driver, links):
 
                 driver.execute_script("arguments[0].click();", phone_number_element)
 
-                WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//*[@id="realtor-contacts"]/div/div/div/ul/li/a')))
+                WebDriverWait(driver, 10).until(
+                    ec.visibility_of_element_located((By.XPATH, '//*[@id="realtor-contacts"]/div/div/div/ul/li/a')))
                 phone_number = driver.find_element(By.XPATH, '//*[@id="realtor-contacts"]/div/div/div/ul/li/a').text
                 mail += 'Отсутствует'
             except NoSuchElementException:
@@ -158,16 +165,20 @@ def get_info_personal(driver, links):
 
         experience = ''
 
-        if elements[0].find_element(By.CSS_SELECTOR, "span._3ea6fa5da8--color_black_100--kPHhJ._3ea6fa5da8--lineHeight_22px--bnKK9._3ea6fa5da8--fontWeight_bold--ePDnv._3ea6fa5da8--fontSize_16px--RB9YW._3ea6fa5da8--display_block--pDAEx._3ea6fa5da8--text--g9xAG._3ea6fa5da8--text_letterSpacing__normal--xbqP6").text == 'не указан':
+        if elements[0].find_element(By.CSS_SELECTOR,
+                                    "span._3ea6fa5da8--color_black_100--kPHhJ._3ea6fa5da8--lineHeight_22px--bnKK9._3ea6fa5da8--fontWeight_bold--ePDnv._3ea6fa5da8--fontSize_16px--RB9YW._3ea6fa5da8--display_block--pDAEx._3ea6fa5da8--text--g9xAG._3ea6fa5da8--text_letterSpacing__normal--xbqP6").text == 'не указан':
             experience += 'Опыт работы не указан'
         else:
-            experience = elements[0].find_element(By.CSS_SELECTOR, "span._3ea6fa5da8--color_black_100--kPHhJ._3ea6fa5da8--lineHeight_22px--bnKK9._3ea6fa5da8--fontWeight_bold--ePDnv._3ea6fa5da8--fontSize_16px--RB9YW._3ea6fa5da8--display_block--pDAEx._3ea6fa5da8--text--g9xAG._3ea6fa5da8--text_letterSpacing__normal--xbqP6").text
+            experience = elements[0].find_element(By.CSS_SELECTOR,
+                                                  "span._3ea6fa5da8--color_black_100--kPHhJ._3ea6fa5da8--lineHeight_22px--bnKK9._3ea6fa5da8--fontWeight_bold--ePDnv._3ea6fa5da8--fontSize_16px--RB9YW._3ea6fa5da8--display_block--pDAEx._3ea6fa5da8--text--g9xAG._3ea6fa5da8--text_letterSpacing__normal--xbqP6").text
 
-        on_cian = elements[1].find_element(By.CSS_SELECTOR, "span._3ea6fa5da8--color_black_100--kPHhJ._3ea6fa5da8--lineHeight_22px--bnKK9._3ea6fa5da8--fontWeight_bold--ePDnv._3ea6fa5da8--fontSize_16px--RB9YW._3ea6fa5da8--display_block--pDAEx._3ea6fa5da8--text--g9xAG._3ea6fa5da8--text_letterSpacing__normal--xbqP6").text
+        on_cian = elements[1].find_element(By.CSS_SELECTOR,
+                                           "span._3ea6fa5da8--color_black_100--kPHhJ._3ea6fa5da8--lineHeight_22px--bnKK9._3ea6fa5da8--fontWeight_bold--ePDnv._3ea6fa5da8--fontSize_16px--RB9YW._3ea6fa5da8--display_block--pDAEx._3ea6fa5da8--text--g9xAG._3ea6fa5da8--text_letterSpacing__normal--xbqP6").text
 
         objects = ''
 
-        if elements[2].find_element(By.CSS_SELECTOR, "div._3ea6fa5da8--counters-item--kwGtk > span").text == 'нет объектов':
+        if elements[2].find_element(By.CSS_SELECTOR,
+                                    "div._3ea6fa5da8--counters-item--kwGtk > span").text == 'нет объектов':
             objects += '0'
         else:
             objects = elements[2].find_element(By.CSS_SELECTOR, "div._3ea6fa5da8--counters-item--kwGtk > span").text
@@ -182,7 +193,8 @@ def get_info_personal(driver, links):
 
         rating_rewiews = ''
 
-        if driver.find_element(By.CSS_SELECTOR, "div._3ea6fa5da8--rating-desctiption--HgRir").text == 'Нет оценок и отзывов':
+        if driver.find_element(By.CSS_SELECTOR,
+                               "div._3ea6fa5da8--rating-desctiption--HgRir").text == 'Нет оценок и отзывов':
             rating_rewiews += '0,0'
         else:
             rating_rewiews = driver.find_element(By.CSS_SELECTOR, "div._3ea6fa5da8--rating-desctiption--HgRir").text
@@ -195,8 +207,10 @@ def get_info_personal(driver, links):
             rewiews = rating_rewiews.split('・')[1].replace('отзыв', '')
 
         about_me = ''
+
         try:
-            gg = driver.find_element(By.XPATH, '//*[@id="realtor-reviews-frontend"]/div/div[2]/main/section[1]/div[3]/div[1]').text
+            gg = driver.find_element(By.XPATH,
+                                     '//*[@id="realtor-reviews-frontend"]/div/div[2]/main/section[1]/div[3]/div[1]').text
             skun = gg.split()
 
             if skun[0] == 'О':
@@ -225,7 +239,8 @@ def get_info_personal(driver, links):
 
         specialization = ''
         try:
-            go = driver.find_element(By.XPATH, '//*[@id="realtor-reviews-frontend"]/div/div[2]/main/section[1]/div[3]/div[2]').text
+            go = driver.find_element(By.XPATH,
+                                     '//*[@id="realtor-reviews-frontend"]/div/div[2]/main/section[1]/div[3]/div[2]').text
 
             skj = go.split()
 
@@ -250,7 +265,8 @@ def get_info_personal(driver, links):
 
         region_work = ''
         try:
-            ab = driver.find_element(By.XPATH, '//*[@id="realtor-reviews-frontend"]/div/div[2]/main/section[1]/div[3]/div[3]').text
+            ab = driver.find_element(By.XPATH,
+                                     '//*[@id="realtor-reviews-frontend"]/div/div[2]/main/section[1]/div[3]/div[3]').text
             fokus = ab.split()
 
             if fokus[0] == 'Регион':
@@ -268,7 +284,8 @@ def get_info_personal(driver, links):
 
         agency = ''
         try:
-            agency = driver.find_element(By.XPATH, '//*[@id="realtor-reviews-frontend"]/div/div[2]/main/section[1]/div[3]/div[4]').text
+            agency = driver.find_element(By.XPATH,
+                                         '//*[@id="realtor-reviews-frontend"]/div/div[2]/main/section[1]/div[3]/div[4]').text
 
         except NoSuchElementException:
             agency += 'Отсутсвует или уже присутсвует в верхних елементах'
@@ -295,7 +312,6 @@ def get_info_personal(driver, links):
 
 def main():
     options = ChromeOptions()
-    # options.add_argument("--headless")
     options.add_argument("--start_maximized")
 
     driver = webdriver.Chrome(options=options)
